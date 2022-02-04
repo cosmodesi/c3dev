@@ -1,4 +1,4 @@
-"""
+"""Production script for gumbo_v0.0
 """
 import numpy as np
 import argparse
