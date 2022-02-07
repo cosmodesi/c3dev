@@ -5,3 +5,4 @@ astropy
 numba
 halotools
 h5py
+jax
