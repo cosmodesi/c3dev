@@ -1,10 +1,14 @@
-"""
-"""
+"""Unit testing for the galmatch module."""
 import numpy as np
 from ..galmatch import compute_source_galaxy_selection_indices
 
 
 def test_source_galaxy_selection_indices():
+    """Set up a simple example of source and target halo catalogs with a few tightly
+    localized collections of properties. Verify that the bookkeeping of the
+    compute_source_galaxy_selection_indices function correctly handles the
+    correspondence between halos with similar properties.
+    """
     n_groupings = 3
     n_source_halos_per_group, n_target_halos_per_group = 50, 600
     n_source_halos = n_groupings * n_source_halos_per_group
