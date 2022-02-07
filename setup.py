@@ -20,6 +20,7 @@ setup(
         "numba",
         "halotools",
         "h5py",
+        "jax",
     ],
     packages=find_packages(),
     url="https://github.com/cosmodesi/c3dev",
