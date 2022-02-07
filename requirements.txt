@@ -1,0 +1,7 @@
+numpy
+scipy
+healpy
+astropy
+numba
+halotools
+h5py
