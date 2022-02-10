@@ -2,7 +2,7 @@
 """
 import numpy as np
 
-BEBOP_DRN = "/lcrc/project/halotools/C3GMC/UM/SMDPL/SFR_snapshot_binaries"
+BEBOP_DRN = "/lcrc/project/halotools/C3EMC/UM/SMDPL/SFR_snapshot_binaries"
 BASENAME = "sfr_catalog_0.550400.bin"
 SMDPL_LBOX = 400.0  # Mpc/h
 
