@@ -4,8 +4,8 @@ import os
 from astropy.table import Table
 
 
-TASSO = "/Users/aphearin/work/DATA/DESI/C3GMC/UNIT"
-BEBOP = "/lcrc/project/halotools/C3GMC/UNIT"
+TASSO = "/Users/aphearin/work/DATA/DESI/C3EMC/UNIT"
+BEBOP = "/lcrc/project/halotools/C3EMC/UNIT"
 EXAMPLE_BN = "out_107p.list.hdf5"
 UNIT_SIM_LBOX = 1000.0  # Mpc/h
 

@@ -116,7 +116,7 @@ if __name__ == "__main__":
     t8 = time()
     print("{0:.1f} seconds to inherit from UM".format(t8 - t7))
 
-    tng_phot_sample_fn = "/lcrc/project/halotools/C3GMC/TNG300-1/tng_phot_sample.h5"
+    tng_phot_sample_fn = "/lcrc/project/halotools/C3EMC/TNG300-1/tng_phot_sample.h5"
     tng_phot_sample = Table.read(tng_phot_sample_fn, path="data")
     tng_phot_sample["logsm"] = np.log10(tng_phot_sample["SubhaloMassType"][:, 4]) + 10
 

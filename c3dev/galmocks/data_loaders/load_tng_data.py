@@ -3,7 +3,7 @@
 
 
 SANDY_SCRATCH_PATH = "/global/cscratch1/sd/sihany/TNG300-1/output"
-BEBOP = "/lcrc/project/halotools/C3GMC/TNG300-1"
+BEBOP = "/lcrc/project/halotools/C3EMC/TNG300-1"
 
 
 def load_tng_subhalos(drn=SANDY_SCRATCH_PATH):
