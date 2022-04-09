@@ -131,3 +131,10 @@ if __name__ == "__main__":
     ] = galsampler_res.target_gals_source_halo_ids
     t8 = time()
     print("{0:.1f} seconds to inherit from TNG".format(t8 - t7))
+
+    version_a_velocities = get_ellipsoidal_velocities(
+        gal_velocities, host_halo_velocities, host_axis, host_b_to_a, host_c_to_a
+    )
+    version_b_velocities = get_ellipsoidal_velocities(
+        gal_velocities, host_halo_velocities, random_axis, host_b_to_a, host_c_to_a
+    )
