@@ -10,8 +10,6 @@ from c3dev.galmocks.data_loaders.load_tng_data import get_value_added_tng_data
 from c3dev.galmocks.data_loaders.load_unit_sims import UNIT_LBOX, read_unit_sim
 from c3dev.galmocks.utils import galmatch, abunmatch
 from halotools.utils import crossmatch, sliding_conditional_percentile
-from halotools.empirical_models import noisy_percentile
-from halotools.utils.inverse_transformation_sampling import build_cdf_lookup
 
 TNG_LOGSM_CUT = 9.0
 
