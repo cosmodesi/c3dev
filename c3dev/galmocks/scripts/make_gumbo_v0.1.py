@@ -4,7 +4,9 @@ import numpy as np
 import argparse
 from time import time
 from astropy.table import Table
-from c3dev.galmocks.data_loaders.load_tng import load_xmatched_tng_catalog as load_tng
+from c3dev.galmocks.data_loaders.load_tng_data import load_tng_subhalos
+from c3dev.galmocks.data_loaders.load_tng_data import load_tng_host_halos
+from c3dev.galmocks.data_loaders.load_tng_data import get_value_added_tng_data
 from c3dev.galmocks.utils import galmatch
 from halotools.utils import crossmatch, sliding_conditional_percentile
 from halotools.empirical_models import noisy_percentile
@@ -20,13 +22,18 @@ def get_abunmatched_quantity(*args):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("unit_sim_fn", help="path to unit sim subhalo catalog")
-    parser.add_argument("tng_fn", help="path to tng catalog")
+    parser.add_argument(
+        "tng_drn", help="directory to tng data read with illustris_python"
+    )
+    parser.add_argument("tng_snap", type=int, help="TNG snapshot number")
     parser.add_argument("outname", help="Output fname")
     args = parser.parse_args()
 
     t0 = time()
-    tng = load_tng(args.tng_fn)
-    logsm_msk = tng["sm"] > 10 ** TNG_LOGSM_CUT
+    tng_subs = load_tng_subhalos(args.tng_drn, args.tng_snapnum)
+    tng_halos = load_tng_host_halos(args.tng_drn, args.tng_snapnum)
+    tng = get_value_added_tng_data(tng_halos, tng_subs)
+    logsm_msk = tng["sm"] > 10**TNG_LOGSM_CUT
     tng = tng[logsm_msk]
     t1 = time()
     unit = Table.read(args.unit_sim_fn, path="data")
