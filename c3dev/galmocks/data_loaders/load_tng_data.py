@@ -7,6 +7,7 @@ from halotools.utils import sliding_conditional_percentile
 
 SANDY_SCRATCH_PATH = "/global/cscratch1/sd/sihany/TNG300-1/output"
 BEBOP = "/lcrc/project/halotools/C3EMC/TNG300-1"
+TNG_LBOX = 205.0
 
 
 def load_tng_subhalos(drn=SANDY_SCRATCH_PATH, snapNum=55):
@@ -42,6 +43,7 @@ def get_value_added_tng_data(subs, hosts):
     tng["griz"] = subs["SubhaloStellarPhotometrics"][:, 4:]
 
     tng["host_halo_index"] = subs["SubhaloGrNr"]
+    hosts["halo_id"] = np.arange(len(hosts)).astype(int)
 
     # Broadcast properties of the central subhalo to each group member
     uvals, indices, counts = np.unique(
@@ -61,4 +63,4 @@ def get_value_added_tng_data(subs, hosts):
     tng["host_halo_p_vmax"] = hosts["p_vmax"][subs["SubhaloGrNr"]]
     tng["host_halo_p_vdisp"] = hosts["p_vdisp"][subs["SubhaloGrNr"]]
 
-    return tng
+    return tng, hosts

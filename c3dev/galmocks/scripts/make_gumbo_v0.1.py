@@ -4,19 +4,16 @@ import numpy as np
 import argparse
 from time import time
 from astropy.table import Table
-from c3dev.galmocks.data_loaders.load_tng_data import load_tng_subhalos
+from c3dev.galmocks.data_loaders.load_tng_data import load_tng_subhalos, TNG_LBOX
 from c3dev.galmocks.data_loaders.load_tng_data import load_tng_host_halos
 from c3dev.galmocks.data_loaders.load_tng_data import get_value_added_tng_data
-from c3dev.galmocks.utils import galmatch
+from c3dev.galmocks.data_loaders.load_unit_sims import UNIT_LBOX, read_unit_sim
+from c3dev.galmocks.utils import galmatch, abunmatch
 from halotools.utils import crossmatch, sliding_conditional_percentile
 from halotools.empirical_models import noisy_percentile
 from halotools.utils.inverse_transformation_sampling import build_cdf_lookup
 
 TNG_LOGSM_CUT = 9.0
-
-
-def get_abunmatched_quantity(*args):
-    raise NotImplementedError()
 
 
 if __name__ == "__main__":
@@ -25,66 +22,45 @@ if __name__ == "__main__":
     parser.add_argument(
         "tng_drn", help="directory to tng data read with illustris_python"
     )
-    parser.add_argument("tng_snap", type=int, help="TNG snapshot number")
+    parser.add_argument("tng_snapnum", type=int, help="TNG snapshot number")
     parser.add_argument("outname", help="Output fname")
     args = parser.parse_args()
 
     t0 = time()
-    tng_subs = load_tng_subhalos(args.tng_drn, args.tng_snapnum)
-    tng_halos = load_tng_host_halos(args.tng_drn, args.tng_snapnum)
-    tng = get_value_added_tng_data(tng_halos, tng_subs)
-    logsm_msk = tng["sm"] > 10**TNG_LOGSM_CUT
-    tng = tng[logsm_msk]
+    _tng, tng_halos = get_value_added_tng_data(
+        load_tng_host_halos(args.tng_drn, args.tng_snapnum),
+        load_tng_subhalos(args.tng_drn, args.tng_snapnum),
+    )
+    logsm_msk = _tng["mstar"] > 10**TNG_LOGSM_CUT
+    tng = Table(_tng)[logsm_msk]
     t1 = time()
-    unit = Table.read(args.unit_sim_fn, path="data")
+    unit = read_unit_sim(args.unit_sim_fn)
     t2 = time()
     print("{0:.1f} seconds to load UM".format(t1 - t0))
     print("{0:.1f} seconds to load UNIT".format(t2 - t1))
 
-    n_tng = len(tng)
+    unit = unit[unit["uber_host_haloid"] == unit["halo_id"]]
 
-    cenmsk_unit = unit["uber_host_haloid"] == unit["halo_id"]
-    cenmsk_tng = tng["uber_host_haloid"] == tng["not_implemented_yet"]
-
-    rematching_tng_keys = "mvir", "vmax"
-    rematching_unit_keys = "halo_mvir", "halo_vmax"
-    gen = zip(rematching_tng_keys, rematching_unit_keys)
-    rematched_vals = [
-        get_abunmatched_quantity(tng[tng_key], unit[unit_key])
-        for tng_key, unit_key in gen
-    ]
-    for key, newvals in zip(rematching_tng_keys, rematched_vals):
-        tng["unit_" + key] = newvals
-
-    #
-    # __, tng_cens_unit_mvir_sorted = build_cdf_lookup(
-    #     np.log10(unit["halo_mvir"][cenmsk_unit]), npts_lookup_table=ncens_tng
-    # )
-    # __, tng_cens_unit_vmax_sorted = build_cdf_lookup(
-    #     np.log10(unit["halo_vmax"][cenmsk_unit]), npts_lookup_table=ncens_tng
-    # )
-    # uber_host_unit_mvir = np.zeros(n_tng)
-    # uber_host_unit_mvir[cenmsk_tng] = tng_cens_unit_mvir
-    # uber_host_unit_mvir[~cenmsk_tng] = uber_host_unit_mvir[
-    #     tng["host_index"][~cenmsk_tng]
-    # ]
-    # tng["uber_host_unit_mvir"] = uber_host_unit_mvir
-
-    source_galaxies_host_halo_id = tng["host_halo_id"]
-    source_halo_ids = tng["subhalo_id"]
-
-    target_halo_ids = unit["halo_id"][cenmsk_unit]
-
-    target_halo_props = (
-        np.log10(unit["halo_mvir"][cenmsk_unit]),
-        np.log10(unit["halo_vmax"][cenmsk_unit]),
+    tng_halos["logmp_unit"] = abunmatch.get_abunmatched_quantity(
+        np.log10(tng_halos["GroupMass"]) + 10,
+        np.log10(unit["halo_mvir"]),
+        TNG_LBOX**3,
+        UNIT_LBOX**3,
+        reverse=True,
     )
 
-    source_halo_props = (
-        np.log10(tng["unit_mvir"][cenmsk_unit]),
-        np.log10(tng["unit_vmax"][cenmsk_unit]),
+    tng_halos["p_vmax"] = sliding_conditional_percentile(
+        tng_halos["logmp_unit"], tng_halos["central_subhalo_vmax"], 101
+    )
+    unit["p_vmax"] = sliding_conditional_percentile(
+        np.log10(unit["halo_mvir"]), unit["halo_vmax"], 101
     )
 
+    source_galaxies_host_halo_id = tng["host_halo_index"]
+    source_halo_ids = tng_halos["halo_id"]
+    target_halo_ids = unit["halo_id"]
+    source_halo_props = (tng_halos["logmp_unit"], tng_halos["p_vmax"])
+    target_halo_props = (np.log10(unit["halo_mvir"]), unit["p_vmax"])
     d = (
         source_galaxies_host_halo_id,
         source_halo_ids,
