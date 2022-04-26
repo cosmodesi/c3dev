@@ -94,24 +94,15 @@ if __name__ == "__main__":
     print("{0:.1f} seconds to inherit from unit with crossmatch".format(t7 - t6))
 
     # Inherit from TNG
-    keys_to_inherit_from_tng = (
-        "m",
-        "sm",
-        "sfr",
-        "uber_host_haloid",
-        "id",
-        "mhost",
-        "rvir_host",
-        "host_delta_pos",
-    )
+    keys_to_inherit_from_tng = list(tng.keys())
     for key in keys_to_inherit_from_tng:
-        output_mock["um_" + key] = tng[key][galsampler_res.target_gals_selection_indx]
-    output_mock[
-        "galsampler_target_halo_ids"
-    ] = galsampler_res.target_gals_target_halo_ids
-    output_mock[
-        "galsampler_source_halo_ids"
-    ] = galsampler_res.target_gals_source_halo_ids
+        output_mock["tng_" + key] = tng[key][galsampler_res.target_gals_selection_indx]
+
+    _key = "galsampler_target_halo_ids"
+    output_mock[_key] = galsampler_res.target_gals_target_halo_ids
+
+    _key = "galsampler_source_halo_ids"
+    output_mock[_key] = galsampler_res.target_gals_source_halo_ids
     t8 = time()
     print("{0:.1f} seconds to inherit from TNG".format(t8 - t7))
 
