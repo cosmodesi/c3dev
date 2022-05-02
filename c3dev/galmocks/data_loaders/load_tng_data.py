@@ -46,11 +46,9 @@ def get_value_added_tng_data(subs, hosts):
     hosts["halo_id"] = np.arange(len(hosts)).astype(int)
 
     # Broadcast properties of the central subhalo to each group member
-    uvals, indices, counts = np.unique(
-        subs["SubhaloGrNr"], return_counts=True, return_index=True
-    )
-    hosts["central_subhalo_vmax"] = subs["SubhaloVmax"][indices]
-    hosts["central_subhalo_vdisp"] = subs["SubhaloVelDisp"][indices]
+    hosts["central_subhalo_vmax"] = subs["SubhaloVmax"][hosts["GroupFirstSub"]]
+    hosts["central_subhalo_vdisp"] = subs["SubhaloVelDisp"][hosts["GroupFirstSub"]]
+
     tng["host_halo_vmax"] = hosts["central_subhalo_vmax"][subs["SubhaloGrNr"]]
     tng["host_halo_vdisp"] = hosts["central_subhalo_vdisp"][subs["SubhaloGrNr"]]
 
