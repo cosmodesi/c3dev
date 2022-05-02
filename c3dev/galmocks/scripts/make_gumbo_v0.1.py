@@ -39,7 +39,7 @@ if __name__ == "__main__":
     print("{0:.1f} seconds to load UNIT".format(t2 - t1))
 
     # unit = unit[unit["uber_host_haloid"] == unit["halo_id"]]
-    unit = unit[unit["halo_upid"] == unit["halo_id"]]
+    unit = unit[unit["halo_upid"] == -1]
 
     # tng_halos["logmh_unit"] = abunmatch.get_abunmatched_quantity(
     #     tng_halos["logmh"],
