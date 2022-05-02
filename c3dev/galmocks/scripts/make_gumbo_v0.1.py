@@ -7,7 +7,8 @@ from astropy.table import Table
 from c3dev.galmocks.data_loaders.load_tng_data import load_tng_subhalos, TNG_LBOX
 from c3dev.galmocks.data_loaders.load_tng_data import load_tng_host_halos
 from c3dev.galmocks.data_loaders.load_tng_data import get_value_added_tng_data
-from c3dev.galmocks.data_loaders.load_unit_sims import UNIT_LBOX, read_unit_sim
+from c3dev.galmocks.data_loaders.load_unit_sims import load_value_added_unit_sim
+from c3dev.galmocks.data_loaders.load_unit_sims import UNIT_LBOX
 from c3dev.galmocks.utils import galmatch, abunmatch
 from halotools.utils import crossmatch, sliding_conditional_percentile
 
@@ -32,32 +33,33 @@ if __name__ == "__main__":
     logsm_msk = _tng["mstar"] > 10**TNG_LOGSM_CUT
     tng = _tng[logsm_msk]
     t1 = time()
-    unit = read_unit_sim(args.unit_sim_fn)
+    unit = load_value_added_unit_sim(args.unit_sim_fn)
     t2 = time()
     print("{0:.1f} seconds to load UM".format(t1 - t0))
     print("{0:.1f} seconds to load UNIT".format(t2 - t1))
 
     unit = unit[unit["uber_host_haloid"] == unit["halo_id"]]
 
-    tng_halos["logmp_unit"] = abunmatch.get_abunmatched_quantity(
-        np.log10(tng_halos["GroupMass"]) + 10,
-        np.log10(unit["halo_mvir"]),
-        TNG_LBOX**3,
-        UNIT_LBOX**3,
-        reverse=True,
-    )
+    # tng_halos["logmh_unit"] = abunmatch.get_abunmatched_quantity(
+    #     tng_halos["logmh"],
+    #     np.log10(unit["halo_mvir"]),
+    #     TNG_LBOX**3,
+    #     UNIT_LBOX**3,
+    #     reverse=True,
+    # )
+    tng_halos["logmh_unit"] = tng_halos["logmh"]
 
     tng_halos["p_vmax"] = sliding_conditional_percentile(
-        tng_halos["logmp_unit"], tng_halos["central_subhalo_vmax"], 101
+        tng_halos["logmh_unit"], tng_halos["central_subhalo_vmax"], 201
     )
     unit["p_vmax"] = sliding_conditional_percentile(
-        np.log10(unit["halo_mvir"]), unit["halo_vmax"], 101
+        np.log10(unit["halo_mvir"]), unit["halo_vmax"], 201
     )
 
     source_galaxies_host_halo_id = tng["host_halo_index"]
     source_halo_ids = tng_halos["halo_id"]
     target_halo_ids = unit["halo_id"]
-    source_halo_props = (tng_halos["logmp_unit"], tng_halos["p_vmax"])
+    source_halo_props = (tng_halos["logmh_unit"], tng_halos["p_vmax"])
     target_halo_props = (np.log10(unit["halo_mvir"]), unit["p_vmax"])
     d = (
         source_galaxies_host_halo_id,
