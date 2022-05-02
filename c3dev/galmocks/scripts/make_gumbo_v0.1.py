@@ -25,11 +25,11 @@ if __name__ == "__main__":
     parser.add_argument("outname", help="Output fname")
     args = parser.parse_args()
 
+    _tng_host_halos = load_tng_host_halos(args.tng_drn, args.tng_snapnum)
+    _tng_subhalos = load_tng_subhalos(args.tng_drn, args.tng_snapnum)
     t0 = time()
-    _tng, tng_halos = get_value_added_tng_data(
-        load_tng_host_halos(args.tng_drn, args.tng_snapnum),
-        load_tng_subhalos(args.tng_drn, args.tng_snapnum),
-    )
+    _tng, tng_halos = get_value_added_tng_data(_tng_host_halos, _tng_subhalos)
+
     logsm_msk = _tng["mstar"] > 10**TNG_LOGSM_CUT
     tng = _tng[logsm_msk]
     t1 = time()
