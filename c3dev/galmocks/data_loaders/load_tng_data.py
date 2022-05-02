@@ -43,7 +43,8 @@ def get_value_added_tng_data(subs, hosts):
     tng["griz"] = subs["SubhaloStellarPhotometrics"][:, 4:]
 
     tng["host_halo_index"] = subs["SubhaloGrNr"]
-    hosts["halo_id"] = np.arange(len(hosts)).astype(int)
+    hosts["halo_id"] = np.arange(len(hosts["GroupMass"])).astype(int)
+    hosts.pop("count")
 
     # Broadcast properties of the central subhalo to each group member
     hosts["central_subhalo_vmax"] = subs["SubhaloVmax"][hosts["GroupFirstSub"]]
