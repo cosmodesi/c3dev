@@ -30,7 +30,7 @@ if __name__ == "__main__":
         load_tng_subhalos(args.tng_drn, args.tng_snapnum),
     )
     logsm_msk = _tng["mstar"] > 10**TNG_LOGSM_CUT
-    tng = Table(_tng)[logsm_msk]
+    tng = _tng[logsm_msk]
     t1 = time()
     unit = read_unit_sim(args.unit_sim_fn)
     t2 = time()
