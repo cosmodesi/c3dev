@@ -53,7 +53,7 @@ if __name__ == "__main__":
         tng_halos["logmh_unit"], tng_halos["central_subhalo_vmax"], 201
     )
     unit["p_vmax"] = sliding_conditional_percentile(
-        np.log10(unit["halo_mvir"]), unit["halo_vmax"], 201
+        np.log10(unit["halo_mvir"]), unit["halo_nfw_conc"], 201
     )
 
     source_galaxies_host_halo_id = tng["host_halo_index"]
