@@ -28,7 +28,7 @@ if __name__ == "__main__":
     _tng_host_halos = load_tng_host_halos(args.tng_drn, args.tng_snapnum)
     _tng_subhalos = load_tng_subhalos(args.tng_drn, args.tng_snapnum)
     t0 = time()
-    _tng, tng_halos = get_value_added_tng_data(_tng_host_halos, _tng_subhalos)
+    _tng, tng_halos = get_value_added_tng_data(_tng_subhalos, _tng_host_halos)
 
     logsm_msk = _tng["mstar"] > 10**TNG_LOGSM_CUT
     tng = _tng[logsm_msk]
