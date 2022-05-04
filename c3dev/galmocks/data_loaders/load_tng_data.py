@@ -54,7 +54,7 @@ def get_value_added_tng_data(subs, hosts):
 
     tng["host_halo_index"] = subs["SubhaloGrNr"]
 
-    subhalo_id = np.arange(len(subs["GroupMass"])).astype(int)
+    subhalo_id = np.arange(len(subs["SubhaloGrNr"])).astype(int)
     subhalo_cen_id = subhalo_id[tng_hosts["GroupFirstSub"]]
     tng["is_central"] = subhalo_cen_id == subhalo_id
 
