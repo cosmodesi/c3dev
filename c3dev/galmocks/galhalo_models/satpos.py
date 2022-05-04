@@ -59,7 +59,7 @@ def _inherit_host_centric_posvel_satellites(
     )
 
     dd_match, indx_match = calculate_indx_correspondence(
-        logmh_host_source, logmh_host_target + uran
+        (logmh_host_source,), (logmh_host_target + uran,)
     )
     delta_pos_target = delta_pos_source[indx_match]
     delta_vel_target = delta_vel_source[indx_match]

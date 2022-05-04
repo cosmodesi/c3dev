@@ -133,8 +133,8 @@ if __name__ == "__main__":
     logmh_host_source = tng["host_halo_logmh"]
     pos_host_source = tng["host_halo_pos"]
     vel_host_source = tng["host_halo_vel"]
-    pos_source = tng["pos"]
-    vel_source = tng["vel"]
+    pos_source = tng["subhalo_pos"]
+    vel_source = tng["subhalo_vel"]
     pos_target, vel_target = inherit_host_centric_posvel(
         ran_key,
         is_sat_source,
@@ -148,6 +148,8 @@ if __name__ == "__main__":
         pos_source,
         vel_source,
     )
+    output_mock["pos"] = pos_target
+    output_mock["vel"] = vel_target
 
     print("\n")
     print(output_mock.keys())
