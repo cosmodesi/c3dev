@@ -4,6 +4,7 @@ from collections import OrderedDict
 import numpy as np
 from halotools.utils import sliding_conditional_percentile
 from astropy.table import Table
+from ..utils.galprops import compute_lg_ssfr
 
 
 SANDY_SCRATCH_PATH = "/global/cscratch1/sd/sihany/TNG300-1/output"
@@ -52,6 +53,8 @@ def get_value_added_tng_data(subs, hosts):
     tng["subhalo_dm"] = subs["SubhaloMassType"][:, 1] * 1e10
     tng["mstar"] = subs["SubhaloMassType"][:, 4] * 1e10
     tng["griz"] = subs["SubhaloStellarPhotometrics"][:, 4:]
+    tng["sfr"] = subs["SubhaloSFR"]
+    tng["lgssfr"] = compute_lg_ssfr(tng["mstar"], tng["sfr"])
 
     tng["host_halo_index"] = subs["SubhaloGrNr"]
 

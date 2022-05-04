@@ -13,6 +13,7 @@ from c3dev.galmocks.data_loaders.load_unit_sims import UNIT_LBOX
 from c3dev.galmocks.utils import galmatch, abunmatch
 from c3dev.galmocks.galhalo_models.satpos import inherit_host_centric_posvel
 from halotools.utils import crossmatch, sliding_conditional_percentile
+from c3dev.galmocks.utils.galprops import compute_lg_ssfr
 
 TNG_LOGSM_CUT = 9.0
 SEED = 43
@@ -148,8 +149,27 @@ if __name__ == "__main__":
         pos_source,
         vel_source,
     )
-    output_mock["pos"] = pos_target
+    output_mock["pos"] = np.mod(pos_target, UNIT_LBOX)
     output_mock["vel"] = vel_target
+
+    tng_phot_sample_fn = "/lcrc/project/halotools/C3EMC/TNG300-1/tng_phot_sample.h5"
+    tng_phot_sample = Table.read(tng_phot_sample_fn, path="data")
+    tng_phot_sample["logsm"] = np.log10(tng_phot_sample["SubhaloMassType"][:, 4]) + 10
+
+    tng_phot_sample["lgssfr"] = compute_lg_ssfr(
+        10 ** tng_phot_sample["logsm"], tng_phot_sample["SubhaloSFR"]
+    )
+
+    source_props = (tng_phot_sample["logsm"], tng_phot_sample["lgssfr"])
+    target_props = (
+        np.log10(output_mock["tng_mstar"]),
+        output_mock["tng_lgssfr"],
+    )
+
+    dd_match, indx_match = galmatch.calculate_indx_correspondence(
+        source_props, target_props
+    )
+    output_mock["tng_grizy"] = tng_phot_sample["grizy"][indx_match]
 
     print("\n")
     print(output_mock.keys())
