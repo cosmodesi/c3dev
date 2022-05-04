@@ -4,15 +4,18 @@ import numpy as np
 import argparse
 from time import time
 from astropy.table import Table
+from jax import random as jran
 from c3dev.galmocks.data_loaders.load_tng_data import load_tng_subhalos, TNG_LBOX
 from c3dev.galmocks.data_loaders.load_tng_data import load_tng_host_halos
 from c3dev.galmocks.data_loaders.load_tng_data import get_value_added_tng_data
 from c3dev.galmocks.data_loaders.load_unit_sims import load_value_added_unit_sim
 from c3dev.galmocks.data_loaders.load_unit_sims import UNIT_LBOX
 from c3dev.galmocks.utils import galmatch, abunmatch
+from c3dev.galmocks.galhalo_models.satpos import inherit_host_centric_posvel
 from halotools.utils import crossmatch, sliding_conditional_percentile
 
 TNG_LOGSM_CUT = 9.0
+SEED = 43
 
 
 if __name__ == "__main__":
@@ -24,6 +27,8 @@ if __name__ == "__main__":
     parser.add_argument("tng_snapnum", type=int, help="TNG snapshot number")
     parser.add_argument("outname", help="Output fname")
     args = parser.parse_args()
+
+    ran_key = jran.PRNGKey(SEED)
 
     _tng_host_halos = load_tng_host_halos(args.tng_drn, args.tng_snapnum)
     _tng_subhalos = load_tng_subhalos(args.tng_drn, args.tng_snapnum)
@@ -107,9 +112,48 @@ if __name__ == "__main__":
     t8 = time()
     print("{0:.1f} seconds to inherit from TNG".format(t8 - t7))
 
-    version_a_velocities = get_ellipsoidal_velocities(
-        gal_velocities, host_halo_velocities, host_axis, host_b_to_a, host_c_to_a
+    logmh_host_target = np.log10(output_mock["unit_halo_mvir"])
+    pos_host_target = np.vstack(
+        (
+            output_mock["unit_halo_x"],
+            output_mock["unit_halo_y"],
+            output_mock["unit_halo_z"],
+        )
+    ).T
+    vel_host_target = np.vstack(
+        (
+            output_mock["unit_halo_vx"],
+            output_mock["unit_halo_vy"],
+            output_mock["unit_halo_vz"],
+        )
+    ).T
+    is_sat_target = ~output_mock["tng_is_central"]
+
+    is_sat_source = ~tng["is_central"]
+    logmh_host_source = tng["host_halo_logmh"]
+    pos_host_source = tng["host_halo_pos"]
+    vel_host_source = tng["host_halo_vel"]
+    pos_source = tng["pos"]
+    vel_source = tng["vel"]
+    pos_target, vel_target = inherit_host_centric_posvel(
+        ran_key,
+        is_sat_source,
+        is_sat_target,
+        logmh_host_source,
+        logmh_host_target,
+        pos_host_source,
+        pos_host_target,
+        vel_host_source,
+        vel_host_target,
+        pos_source,
+        vel_source,
     )
-    version_b_velocities = get_ellipsoidal_velocities(
-        gal_velocities, host_halo_velocities, random_axis, host_b_to_a, host_c_to_a
+
+    print("\n")
+    print(output_mock.keys())
+    output_mock.write(
+        "/lcrc/project/halotools/random_data/0504/testmock.h5",
+        path="data",
+        overwrite=True,
     )
+    print("\n")
