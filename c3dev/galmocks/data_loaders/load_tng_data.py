@@ -34,13 +34,14 @@ def get_value_added_tng_data(subs, hosts):
     tng_hosts.rename_column("GroupPos", "pos")
     tng_hosts.rename_column("GroupVel", "vel")
     tng_hosts["logmh"] = np.log10(hosts["GroupMass"]) + 10
+    tng_hosts["pos"] = tng_hosts["pos"] / 1000
 
     tng = Table()
     tng["host_halo_logmh"] = tng_hosts["logmh"][subs["SubhaloGrNr"]]
     tng["host_halo_pos"] = tng_hosts["pos"][subs["SubhaloGrNr"]]
     tng["host_halo_vel"] = tng_hosts["vel"][subs["SubhaloGrNr"]]
 
-    tng["subhalo_pos"] = subs["SubhaloPos"]
+    tng["subhalo_pos"] = subs["SubhaloPos"] / 1000
     tng["subhalo_vel"] = subs["SubhaloVel"]
     tng["subhalo_mass"] = subs["SubhaloMass"] * 1e10
     tng["subhalo_vmax"] = subs["SubhaloVmax"]
