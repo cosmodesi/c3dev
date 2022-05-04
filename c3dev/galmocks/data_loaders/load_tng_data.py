@@ -28,6 +28,7 @@ def load_tng_host_halos(drn=NERSC, snapNum=55):
 
 def get_value_added_tng_data(subs, hosts):
     hosts["halo_id"] = np.arange(len(hosts["GroupMass"])).astype(int)
+
     host_keys_to_keep = ["halo_id", "GroupFirstSub", "GroupPos", "GroupVel"]
     tng_hosts = Table(OrderedDict([(key, hosts[key]) for key in host_keys_to_keep]))
     tng_hosts.rename_column("GroupPos", "pos")
@@ -52,6 +53,10 @@ def get_value_added_tng_data(subs, hosts):
     tng["griz"] = subs["SubhaloStellarPhotometrics"][:, 4:]
 
     tng["host_halo_index"] = subs["SubhaloGrNr"]
+
+    subhalo_id = np.arange(len(subs["GroupMass"])).astype(int)
+    subhalo_cen_id = subhalo_id[tng_hosts["GroupFirstSub"]]
+    tng["is_central"] = subhalo_cen_id == subhalo_id
 
     # Broadcast properties of the central subhalo to each host
     tng_hosts["central_subhalo_vmax"] = subs["SubhaloVmax"][tng_hosts["GroupFirstSub"]]
