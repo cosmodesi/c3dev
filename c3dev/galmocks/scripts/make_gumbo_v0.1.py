@@ -13,6 +13,7 @@ from c3dev.galmocks.data_loaders.load_unit_sims import load_value_added_unit_sim
 from c3dev.galmocks.data_loaders.load_unit_sims import UNIT_LBOX
 from c3dev.galmocks.utils import galmatch, abunmatch
 from c3dev.galmocks.galhalo_models.satpos import inherit_host_centric_posvel
+from c3dev.galmocks.galhalo_models.satpos import add_central_velbias
 from halotools.utils import crossmatch, sliding_conditional_percentile
 from c3dev.galmocks.utils.galprops import compute_lg_ssfr
 
@@ -52,7 +53,7 @@ if __name__ == "__main__":
     tng_halos["p_vmax"] = sliding_conditional_percentile(
         tng_halos["logmh_unit"], tng_halos["central_subhalo_vmax"], 201
     )
-    unit["p_vmax"] = sliding_conditional_percentile(
+    unit["p_conc"] = sliding_conditional_percentile(
         np.log10(unit["halo_mvir"]), unit["halo_nfw_conc"], 201
     )
 
@@ -60,7 +61,7 @@ if __name__ == "__main__":
     source_halo_ids = tng_halos["halo_id"]
     target_halo_ids = unit["halo_id"]
     source_halo_props = (tng_halos["logmh_unit"], tng_halos["p_vmax"])
-    target_halo_props = (np.log10(unit["halo_mvir"]), unit["p_vmax"])
+    target_halo_props = (np.log10(unit["halo_mvir"]), unit["p_conc"])
     d = (
         source_galaxies_host_halo_id,
         source_halo_ids,
@@ -144,6 +145,14 @@ if __name__ == "__main__":
     )
     output_mock["pos"] = np.mod(pos_target, UNIT_LBOX)
     output_mock["vel"] = vel_target
+
+    is_cen_target = output_mock["tng_is_central"]
+    vel_source = output_mock["tng_subhalo_vel"]
+    vel_host_source = output_mock["tng_host_halo_vel"]
+    vel_host_target = output_mock["vel"]
+    output_mock["vel"] = add_central_velbias(
+        is_cen_target, vel_source, vel_host_source, vel_host_target
+    )
 
     tng_phot_sample_fn = "/lcrc/project/halotools/C3EMC/TNG300-1/tng_phot_sample.h5"
     tng_phot_sample = Table.read(tng_phot_sample_fn, path="data")

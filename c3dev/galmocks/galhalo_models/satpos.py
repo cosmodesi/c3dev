@@ -19,7 +19,7 @@ def inherit_host_centric_posvel(
     vel_source,
     dlogmh=0.25,
 ):
-    pos_sats, vel_sats = _inherit_host_centric_posvel_satellites(
+    pos_sats, vel_sats = _inherit_host_centric_posvel_matching_mhost(
         ran_key,
         logmh_host_source[is_sat_source],
         logmh_host_target[is_sat_target],
@@ -31,15 +31,16 @@ def inherit_host_centric_posvel(
         vel_source[is_sat_source],
         dlogmh,
     )
+
     pos_target = np.copy(pos_host_target)
     vel_target = np.copy(vel_host_target)
-
     pos_target[is_sat_target] = pos_sats
     vel_target[is_sat_target] = vel_sats
+
     return pos_target, vel_target
 
 
-def _inherit_host_centric_posvel_satellites(
+def _inherit_host_centric_posvel_matching_mhost(
     ran_key,
     logmh_host_source,
     logmh_host_target,
@@ -71,3 +72,12 @@ def _inherit_host_centric_posvel_satellites(
     pos_target = pos_host_target + delta_pos_target
     vel_target = vel_host_target + delta_vel_target
     return pos_target, vel_target
+
+
+def add_central_velbias(is_cen_target, vel_source, vel_host_source, vel_host_target):
+    delta_vel_source = vel_source - vel_host_source
+    vel_target = np.copy(vel_host_target)
+    vel_target[is_cen_target] = (
+        vel_target[is_cen_target] + delta_vel_source[is_cen_target]
+    )
+    return vel_target
