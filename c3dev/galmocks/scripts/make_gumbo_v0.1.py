@@ -1,5 +1,6 @@
 """Production script for gumbo_v0.1
 """
+import os
 import numpy as np
 import argparse
 from time import time
@@ -17,7 +18,7 @@ from c3dev.galmocks.utils.galprops import compute_lg_ssfr
 
 TNG_LOGSM_CUT = 9.0
 SEED = 43
-
+OUTDRN = "/lcrc/project/halotools/random_data/0505/"
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -39,21 +40,13 @@ if __name__ == "__main__":
     logsm_msk = _tng["mstar"] > 10**TNG_LOGSM_CUT
     tng = _tng[logsm_msk]
     t1 = time()
+    print("{0:.1f} seconds to load TNG".format(t1 - t0))
     unit = load_value_added_unit_sim(args.unit_sim_fn)
     t2 = time()
-    print("{0:.1f} seconds to load UM".format(t1 - t0))
     print("{0:.1f} seconds to load UNIT".format(t2 - t1))
 
-    # unit = unit[unit["uber_host_haloid"] == unit["halo_id"]]
     unit = unit[unit["halo_upid"] == -1]
 
-    # tng_halos["logmh_unit"] = abunmatch.get_abunmatched_quantity(
-    #     tng_halos["logmh"],
-    #     np.log10(unit["halo_mvir"]),
-    #     TNG_LBOX**3,
-    #     UNIT_LBOX**3,
-    #     reverse=True,
-    # )
     tng_halos["logmh_unit"] = tng_halos["logmh"]
 
     tng_halos["p_vmax"] = sliding_conditional_percentile(
@@ -173,9 +166,6 @@ if __name__ == "__main__":
 
     print("\n")
     print(output_mock.keys())
-    output_mock.write(
-        "/lcrc/project/halotools/random_data/0504/testmock.h5",
-        path="data",
-        overwrite=True,
-    )
+    outname = os.path.join(OUTDRN, args.outname)
+    output_mock.write(outname, path="data", overwrite=True)
     print("\n")

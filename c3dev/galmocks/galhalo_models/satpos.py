@@ -54,12 +54,16 @@ def _inherit_host_centric_posvel_satellites(
     delta_pos_source = pos_source - pos_host_source
     delta_vel_source = vel_source - vel_host_source
 
-    uran = np.array(
-        (jran.uniform(ran_key, shape=logmh_host_target.shape) - 0.5) * dlogmh
+    source_key, target_key = jran.split(ran_key, 2)
+    uran_source = np.array(
+        (jran.uniform(source_key, shape=logmh_host_source.shape) - 0.5) * 0.05
+    )
+    uran_target = np.array(
+        (jran.uniform(target_key, shape=logmh_host_target.shape) - 0.5) * dlogmh
     )
 
     dd_match, indx_match = calculate_indx_correspondence(
-        (logmh_host_source,), (logmh_host_target + uran,)
+        (logmh_host_source + uran_source,), (logmh_host_target + uran_target,)
     )
     delta_pos_target = delta_pos_source[indx_match]
     delta_vel_target = delta_vel_source[indx_match]

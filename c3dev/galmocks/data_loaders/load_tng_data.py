@@ -52,7 +52,6 @@ def get_value_added_tng_data(subs, hosts):
     tng["subhalo_mgas"] = subs["SubhaloMassType"][:, 0] * 1e10
     tng["subhalo_dm"] = subs["SubhaloMassType"][:, 1] * 1e10
     tng["mstar"] = subs["SubhaloMassType"][:, 4] * 1e10
-    tng["griz"] = subs["SubhaloStellarPhotometrics"][:, 4:]
     tng["sfr"] = subs["SubhaloSFR"]
     tng["lgssfr"] = compute_lg_ssfr(tng["mstar"], tng["sfr"])
 
