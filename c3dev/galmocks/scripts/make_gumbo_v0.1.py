@@ -12,8 +12,10 @@ from c3dev.galmocks.data_loaders.load_tng_data import get_value_added_tng_data
 from c3dev.galmocks.data_loaders.load_unit_sims import load_value_added_unit_sim
 from c3dev.galmocks.data_loaders.load_unit_sims import UNIT_LBOX
 from c3dev.galmocks.utils import galmatch, abunmatch
-from c3dev.galmocks.galhalo_models.satpos import inherit_host_centric_posvel
-from c3dev.galmocks.galhalo_models.satpos import add_central_velbias
+from c3dev.galmocks.galhalo_models.galsampler_phase_space import (
+    inherit_host_centric_posvel,
+)
+from c3dev.galmocks.galhalo_models.galsampler_phase_space import add_central_velbias
 from halotools.utils import crossmatch, sliding_conditional_percentile
 from c3dev.galmocks.utils.galprops import compute_lg_ssfr
 
@@ -153,6 +155,8 @@ if __name__ == "__main__":
     output_mock["vel"] = add_central_velbias(
         is_cen_target, vel_source, vel_host_source, vel_host_target
     )
+    t9 = time()
+    print("{0:.1f} seconds to assign phase space".format(t9 - t8))
 
     tng_phot_sample_fn = "/lcrc/project/halotools/C3EMC/TNG300-1/tng_phot_sample.h5"
     tng_phot_sample = Table.read(tng_phot_sample_fn, path="data")
@@ -172,6 +176,8 @@ if __name__ == "__main__":
         source_props, target_props
     )
     output_mock["tng_grizy"] = tng_phot_sample["grizy"][indx_match]
+    t10 = time()
+    print("{0:.1f} seconds to inherit DESI photometry".format(t10 - t9))
 
     print("\n")
     print(output_mock.keys())
