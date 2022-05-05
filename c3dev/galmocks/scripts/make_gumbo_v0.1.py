@@ -21,7 +21,7 @@ from c3dev.galmocks.utils.galprops import compute_lg_ssfr
 
 TNG_LOGSM_CUT = 9.0
 SEED = 43
-OUTDRN = "/lcrc/project/halotools/random_data/0505/"
+OUTDRN = "/lcrc/project/halotools/C3EMC/gumbo"
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
