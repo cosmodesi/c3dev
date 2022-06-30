@@ -29,6 +29,7 @@ def load_tng_host_halos(drn=NERSC, snapNum=55):
 
 def get_value_added_tng_data(subs, hosts):
     hosts["halo_id"] = np.arange(len(hosts["GroupMass"])).astype(int)
+    n_subs = subs["SubhaloGrNr"].size
 
     host_keys_to_keep = ["halo_id", "GroupFirstSub", "GroupPos", "GroupVel"]
     tng_hosts = Table(OrderedDict([(key, hosts[key]) for key in host_keys_to_keep]))
@@ -38,6 +39,9 @@ def get_value_added_tng_data(subs, hosts):
     tng_hosts["pos"] = tng_hosts["pos"] / 1000
 
     tng = Table()
+    tng["is_central"] = np.zeros(n_subs).astype(bool)
+    tng["is_central"][tng_hosts["GroupFirstSub"]] = True
+
     tng["host_halo_logmh"] = tng_hosts["logmh"][subs["SubhaloGrNr"]]
     tng["host_halo_pos"] = tng_hosts["pos"][subs["SubhaloGrNr"]]
     tng["host_halo_vel"] = tng_hosts["vel"][subs["SubhaloGrNr"]]
@@ -56,10 +60,6 @@ def get_value_added_tng_data(subs, hosts):
     tng["lgssfr"] = compute_lg_ssfr(tng["mstar"], tng["sfr"])
 
     tng["host_halo_index"] = subs["SubhaloGrNr"]
-
-    subhalo_id = np.arange(len(subs["SubhaloGrNr"])).astype(int)
-    subhalo_cen_id = subhalo_id[tng_hosts["GroupFirstSub"]]
-    tng["is_central"] = subhalo_cen_id == subhalo_id
 
     # Broadcast properties of the central subhalo to each host
     tng_hosts["central_subhalo_vmax"] = subs["SubhaloVmax"][tng_hosts["GroupFirstSub"]]
