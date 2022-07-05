@@ -5,7 +5,7 @@ from astropy.table import Table
 
 
 NERSC_DRN = "/global/cfs/cdirs/desi/users/aphearin/C3EMC/gumbo"
-LATEST = "v0.1"
+LATEST = "v0.2"
 
 
 def read_gumbo_mock(fn=None, drn=NERSC_DRN, version=LATEST):
@@ -32,6 +32,8 @@ def _get_gumbo_basename(version):
         bn = "gumbo_v0.0.h5"
     elif version == "v0.1":
         bn = "gumbo_v0.1.h5"
+    elif version == "v0.2":
+        bn = "gumbo_v0.2.h5"
     else:
         raise ValueError("No other available versions of the gumbo mock")
     return bn
