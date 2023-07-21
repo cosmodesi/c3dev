@@ -64,3 +64,22 @@ def test_deltabar_ds_random_halos():
     assert delta_bar.shape == (nhalos, nrad)
     assert np.all(delta_bar > -1.0)
     assert np.all(delta_bar < 1.0)
+
+
+def test_deltabar_ds_has_expected_conc_dependence_for_tng_calibration():
+    nrad, nhalos = 40, 20_000
+    lgrad = np.linspace(-1, 1.5, nrad)
+    zz = np.zeros(nhalos)
+    redshift = zz + 0.5
+    lgmh = zz + 12.0
+    halo_percentile = np.linspace(0, 1, nhalos) + 0.5
+
+    # At low mass, delta_bar should be stronger for high-conc halos than low-conc
+    delta_bar = deltabar_ds(lgrad, redshift, lgmh, halo_percentile)
+    assert not np.allclose(delta_bar[0, :], delta_bar[-1, :])
+    assert np.all(delta_bar[0, :] <= delta_bar[-1, :])
+
+    # At high mass, delta_bar has no conc-dependence
+    delta_bar = deltabar_ds(lgrad, redshift, zz + 15, halo_percentile)
+    assert np.allclose(delta_bar[0, :], delta_bar[-1, :])
+    # assert np.all(delta_bar[0, :] <= delta_bar[-1, :])

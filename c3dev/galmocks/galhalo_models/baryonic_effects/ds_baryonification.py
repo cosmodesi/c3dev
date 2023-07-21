@@ -6,7 +6,11 @@ import numpy as np
 from jax import jit as jjit
 from jax import vmap
 
-from .ds_kernels import _baryonic_effect_kern, _get_clipped_halo_arrays
+from .ds_kernels import (
+    _baryonic_effect_kern,
+    _get_clipped_halo_arrays,
+    _get_delta_bar_dymin_lo,
+)
 from .load_tng_ds_fitting_data import load_regularized_tng_fitting_data
 
 _THIS_DRNAME = os.path.dirname(os.path.abspath(__file__))
@@ -23,11 +27,15 @@ def deltabar_ds(lgrad, redshift, lgmh, halo_percentile):
     redshift, lgmh, halo_percentile = _res
     pop_params = grid_interp(np.array((redshift, lgmh)).T)
 
+    dymin_lo = _get_delta_bar_dymin_lo(lgmh)
+    ymin_lo = pop_params[:, 2]
+    ymin_lo = ymin_lo + (halo_percentile - 0.5) * dymin_lo * 2
+
     delta_bar = _baryonic_effect_kern_vmap(
         lgrad,
         pop_params[:, 0],
         pop_params[:, 1],
-        pop_params[:, 2],
+        ymin_lo,
         pop_params[:, 3],
         pop_params[:, 4],
     )
