@@ -11,7 +11,7 @@ from jax import vmap
 
 from .jax_utils import _double_tw_sigmoid, _tw_sigmoid
 
-LGMH_MIN, LGMH_MAX = 12.0, 14.7
+LGMH_MIN, LGMH_MAX = 12.5, 14.7
 Z_MIN, Z_MAX = 0.3, 1.0
 
 

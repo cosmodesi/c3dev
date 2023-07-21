@@ -2,7 +2,7 @@
 """
 import numpy as np
 
-from ..ds_baryonification import FITTING_DATA
+from ..ds_baryonification import FITTING_DATA, deltabar_ds
 from ..ds_kernels import DEFAULT_PARAMS, _baryonic_effect_kern
 
 
@@ -36,3 +36,31 @@ def test_fitting_data():
 
         assert np.all(delta_bar) > -1.0
         assert np.all(delta_bar) < 1.0
+
+
+def test_deltabar_ds():
+    nrad, nhalos = 40, 20_000
+    lgrad = np.linspace(-1, 1.5, nrad)
+    redshift = np.zeros(nhalos) + 0.5
+    lgmh = np.zeros(nhalos) + 12.0
+    halo_percentile = np.zeros(nhalos) + 0.5
+
+    delta_bar = deltabar_ds(lgrad, redshift, lgmh, halo_percentile)
+    assert np.all(np.isfinite(delta_bar))
+    assert delta_bar.shape == (nhalos, nrad)
+    assert np.all(delta_bar > -1.0)
+    assert np.all(delta_bar < 1.0)
+
+
+def test_deltabar_ds_random_halos():
+    nrad, nhalos = 40, 20_000
+    lgrad = np.linspace(-1, 1.5, nrad)
+    redshift = np.random.uniform(0, 10, nhalos)
+    lgmh = np.random.uniform(10, 16, nhalos)
+    halo_percentile = np.random.uniform(0, 1, nhalos)
+
+    delta_bar = deltabar_ds(lgrad, redshift, lgmh, halo_percentile)
+    assert np.all(np.isfinite(delta_bar))
+    assert delta_bar.shape == (nhalos, nrad)
+    assert np.all(delta_bar > -1.0)
+    assert np.all(delta_bar < 1.0)
