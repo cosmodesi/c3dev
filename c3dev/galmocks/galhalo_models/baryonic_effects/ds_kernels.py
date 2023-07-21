@@ -11,6 +11,9 @@ from jax import vmap
 
 from .jax_utils import _double_tw_sigmoid, _tw_sigmoid
 
+LGMH_MIN, LGMH_MAX = 12.0, 14.7
+Z_MIN, Z_MAX = 0.3, 1.0
+
 
 class Params(typing.NamedTuple):
     x0_lo: float
@@ -99,3 +102,26 @@ def _baryonic_effect_kern(
         tw_h_trans,
     )
     return res
+
+
+def _get_clipped_halo_arrays(redshift, lgmarr, halo_percentile):
+    redshift = np.atleast_1d(redshift)
+    lgmarr = np.atleast_1d(lgmarr)
+    halo_percentile = np.atleast_1d(halo_percentile)
+    n_halos = np.max((redshift.size, lgmarr.size, halo_percentile.size))
+    zz = np.zeros(n_halos)
+
+    redshift = redshift + zz
+    lgmarr = lgmarr + zz
+    halo_percentile = halo_percentile + zz
+
+    lgmarr = np.where(lgmarr < LGMH_MIN, LGMH_MIN, lgmarr)
+    lgmarr = np.where(lgmarr > LGMH_MAX, LGMH_MAX, lgmarr)
+
+    redshift = np.where(redshift < Z_MIN, Z_MIN, redshift)
+    redshift = np.where(redshift > Z_MAX, Z_MAX, redshift)
+
+    halo_percentile = np.where(halo_percentile < 0, 0.0, halo_percentile)
+    halo_percentile = np.where(halo_percentile > 1, 1.0, halo_percentile)
+
+    return redshift, lgmarr, halo_percentile
