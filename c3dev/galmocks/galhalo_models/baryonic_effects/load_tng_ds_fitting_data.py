@@ -1,15 +1,42 @@
 """
 """
 import os
-import typing
 from collections import OrderedDict
 
 import numpy as np
+from astropy.table import Table
+from halotools.utils import sliding_conditional_percentile
 from scipy.interpolate import RegularGridInterpolator
 
 from .ds_kernels import Params
 
 TASSO = "/Users/aphearin/work/DATA/DESI/C3GMC/TNG"
+LGMH_BINS_TNG_TESTING_DATA = np.linspace(12.5, 14.25, 5)
+
+
+def load_tng_megafile(drn=TASSO, bnpat="0d3"):
+    bn = "megafile_tng_and_dark_z_{}.fits".format(bnpat)
+    rbins = np.load(os.path.join(drn, "ds_bins.npy"))
+    lgrbins = np.log10(rbins)
+
+    data = Table.read(os.path.join(drn, bn))
+
+    msun_per_pc_factor = 1e12
+    data["DS_TNG"] = data["DS_TNG"] / msun_per_pc_factor
+    data["DS_TNG_DARK"] = data["DS_TNG_DARK"] / msun_per_pc_factor
+    data["DS_ratio"] = data["DS_TNG"] / data["DS_TNG_DARK"] - 1
+
+    uvals = np.unique(data["SubhaloGrNr"])
+    msg = "data has at least one repeated entry for `SubhaloGrNr` column"
+    assert len(data) == len(uvals), msg
+
+    data["lgMsub"] = np.log10(data["SubhaloMass"])
+
+    for key in ("M_acc_dyn", "stellar_mass", "gass_mass", "c200c"):
+        newkey = "p_" + key
+        data[newkey] = sliding_conditional_percentile(data["lgMsub"], data[key], 41)
+
+    return data, lgrbins
 
 
 def load_tng_data(drn):
@@ -89,3 +116,22 @@ def get_scipy_param_interpolator(redshift_grid, lgm0_grid, fitting_data_matrix):
     values = fitting_data_matrix
     grid_interp = RegularGridInterpolator(points, values, fill_value=None)
     return grid_interp
+
+
+def get_target_data_lgmh(lgmh_bins, data, sumstat=np.median, dlgm=0.1):
+    mmsks = [np.abs(data["lgMsub"] - lgm0) < dlgm for lgm0 in lgmh_bins]
+    target_data = [sumstat(data["DS_ratio"][mmsk], axis=0) for mmsk in mmsks]
+    return mmsks, target_data
+
+
+def measure_target_data_unit_testing(
+    tng_megafile_0d3,
+    tng_megafile_0d5,
+    tng_megafile_1d0,
+    lgmh_bins=LGMH_BINS_TNG_TESTING_DATA,
+):
+    target_data_0d3 = get_target_data_lgmh(lgmh_bins, tng_megafile_0d3)[1]
+    target_data_0d5 = get_target_data_lgmh(lgmh_bins, tng_megafile_0d5)[1]
+    target_data_1d0 = get_target_data_lgmh(lgmh_bins, tng_megafile_1d0)[1]
+    target_data = [target_data_0d3, target_data_0d5, target_data_1d0]
+    return lgmh_bins, np.array(target_data)

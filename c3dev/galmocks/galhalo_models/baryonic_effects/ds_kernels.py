@@ -88,7 +88,7 @@ def _baryonic_effect_kern(
     tw_h_trans = tw_h_lo
     ymax_hi = 0.0
 
-    res = _double_tw_sigmoid(
+    negative_delta_bar = _double_tw_sigmoid(
         x,
         x0_lo,
         tw_h_lo,
@@ -101,7 +101,7 @@ def _baryonic_effect_kern(
         x0_trans,
         tw_h_trans,
     )
-    return res
+    return -negative_delta_bar
 
 
 def _get_clipped_halo_arrays(redshift, lgmarr, halo_percentile):

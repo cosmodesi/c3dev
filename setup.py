@@ -24,6 +24,10 @@ setup(
     packages=find_packages(),
     url="https://github.com/cosmodesi/c3dev",
     package_data={
-        "c3dev": ("galmocks/galhalo_models/baryonic_effects/ds_fit_data/*/*.txt",)
+        "c3dev": (
+            "galmocks/galhalo_models/baryonic_effects/ds_fit_data/*/*.txt",
+            "galmocks/galhalo_models/baryonic_effects/tests/testing_data/*.txt",
+            "galmocks/galhalo_models/baryonic_effects/tests/testing_data/*.npy",
+        )
     },
 )
