@@ -1,5 +1,4 @@
-from setuptools import setup, find_packages
-
+from setuptools import find_packages, setup
 
 PACKAGENAME = "c3dev"
 VERSION = "0.1.0"
@@ -24,4 +23,11 @@ setup(
     ],
     packages=find_packages(),
     url="https://github.com/cosmodesi/c3dev",
+    package_data={
+        "c3dev": (
+            "galmocks/galhalo_models/baryonic_effects/ds_fit_data/*/*.txt",
+            "galmocks/galhalo_models/baryonic_effects/tests/testing_data/*.txt",
+            "galmocks/galhalo_models/baryonic_effects/tests/testing_data/*.npy",
+        )
+    },
 )
