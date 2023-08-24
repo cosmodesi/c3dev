@@ -125,7 +125,8 @@ if __name__ == "__main__":
     print("{0:.1f} seconds to inherit from unit with crossmatch".format(t7 - t6))
 
     # Inherit from Umachine Diffsky
-    keys_to_inherit_from_diffsky = ['is_cen', 'sub_vel', 'Host_vel', 'log_Mvir_host',
+    keys_to_inherit_from_diffsky = ['is_cen', 'sub_pos', 'sub_vel', 'Host_pos', 'Host_vel', 
+                                    'log_Mvir_host', 'Vmax_host', 'mstar', 
                                     'app_mag_g', 'app_mag_r', 'app_mag_z', 'app_mag_wise1', 
                                     'abs_mag_g', 'abs_mag_r', 'abs_mag_z', 'abs_mag_wise1']
     for key in keys_to_inherit_from_diffsky:
