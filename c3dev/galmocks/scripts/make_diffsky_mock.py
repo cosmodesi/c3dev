@@ -1,4 +1,4 @@
-"""Production script for gumbo_v0.3
+"""Production script for diffsky_v0.2
 """
 import argparse
 import os
@@ -128,7 +128,7 @@ if __name__ == "__main__":
     keys_to_inherit_from_diffsky = ['is_cen', 'sub_pos', 'sub_vel', 'Host_pos', 'Host_vel', 
                                     'log_Mvir_host', 'Vmax_host', 'mstar', 
                                     'app_mag_g', 'app_mag_r', 'app_mag_z', 'app_mag_wise1', 
-                                    'abs_mag_g', 'abs_mag_r', 'abs_mag_z', 'abs_mag_wise1']
+                                    'abs_mag_g', 'abs_mag_r', 'abs_mag_z', 'abs_mag_wise1', 'isLRG']
     for key in keys_to_inherit_from_diffsky:
         output_mock["diffsky_" + key] = um_mock[key][
             galsampler_res.target_gals_selection_indx
