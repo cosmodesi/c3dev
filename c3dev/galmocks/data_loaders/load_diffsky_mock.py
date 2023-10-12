@@ -5,6 +5,7 @@ from astropy.table import Table
 
 
 NERSC_DRN = "/global/cfs/cdirs/desi/users/gbeltzmo/C3EMC/UNIT"
+LATEST = "v0.2"
 
 
 def read_diffsky_mock(fn=None, drn=NERSC_DRN):
@@ -14,6 +15,9 @@ def read_diffsky_mock(fn=None, drn=NERSC_DRN):
     ----------
     fn : string
         Mock file name
+
+    drn : string, optional
+        Mock directory. Default set by NERSC_DRN at top of module.
 
     """
     if fn is None:
