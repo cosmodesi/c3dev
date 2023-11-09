@@ -1,4 +1,4 @@
-"""Production script for diffsky_v0.2
+"""Production script for diffsky_v0.3
 """
 import argparse
 import os
@@ -22,7 +22,6 @@ from jax import random as jran
 
 UM_LOGSM_CUT = 9.0
 SEED = 43
-#OUTDRN = "/lcrc/project/halotools/C3EMC/gumbo"
 OUTDRN = "/home/gbeltzmohrmann/CSC3"
 
 if __name__ == "__main__":
@@ -159,10 +158,12 @@ if __name__ == "__main__":
             output_mock["unit_halo_vz"],
         )
     ).T
-    is_sat_target = ~output_mock["diffsky_is_cen"]
 
+    is_cen_target = output_mock["diffsky_is_cen"].astype('bool')
+    is_sat_target = ~is_cen_target
 
-    is_sat_source = ~um_mock["is_cen"]
+    is_cen_source = um_mock["is_cen"].astype('bool')
+    is_sat_source = ~is_cen_source
     logmh_host_source = um_mock["log_Mvir_host"]
     pos_host_source = um_mock["Host_pos"]
     vel_host_source = um_mock["Host_vel"]

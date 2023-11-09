@@ -5,7 +5,7 @@ from astropy.table import Table
 
 
 NERSC_DRN = "/global/cfs/cdirs/desi/users/gbeltzmo/C3EMC/UNIT"
-LATEST = "v0.2"
+LATEST = "v0.3"
 
 
 def read_diffsky_mock(fn=None, drn=NERSC_DRN):
