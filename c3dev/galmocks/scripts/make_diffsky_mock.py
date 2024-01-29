@@ -6,18 +6,22 @@ from time import time
 
 import numpy as np
 from astropy.table import Table
-
-from diffdesi.load_umachine_utils import load_umachine_diffsky, get_value_added_um_data
-
-from c3dev.galmocks.data_loaders.load_unit_sims import (UNIT_LBOX, load_value_added_unit_sim)
-from c3dev.galmocks.galhalo_models.assign_elliptical_velocities import (assign_ellipsoidal_velocities)
-from c3dev.galmocks.galhalo_models.galsampler_phase_space import (add_central_velbias, inherit_host_centric_posvel)
+from c3dev.galmocks.data_loaders.load_unit_sims import (
+    UNIT_LBOX,
+    load_value_added_unit_sim,
+)
+from c3dev.galmocks.galhalo_models.assign_elliptical_velocities import (
+    assign_ellipsoidal_velocities,
+)
+from c3dev.galmocks.galhalo_models.galsampler_phase_space import (
+    add_central_velbias,
+    inherit_host_centric_posvel,
+)
 from c3dev.galmocks.utils import galmatch
 from c3dev.galmocks.utils.galprops import compute_lg_ssfr
-
+from diffdesi.load_umachine_utils import get_value_added_um_data, load_umachine_diffsky
 from halotools.empirical_models.phase_space_models import NFWPhaseSpace
 from halotools.utils import crossmatch, sliding_conditional_percentile
-
 from jax import random as jran
 
 UM_LOGSM_CUT = 9.0
@@ -124,10 +128,25 @@ if __name__ == "__main__":
     print("{0:.1f} seconds to inherit from unit with crossmatch".format(t7 - t6))
 
     # Inherit from Umachine Diffsky
-    keys_to_inherit_from_diffsky = ['is_cen', 'sub_pos', 'sub_vel', 'Host_pos', 'Host_vel', 
-                                    'log_Mvir_host', 'Vmax_host', 'mstar', 
-                                    'app_mag_g', 'app_mag_r', 'app_mag_z', 'app_mag_wise1', 
-                                    'abs_mag_g', 'abs_mag_r', 'abs_mag_z', 'abs_mag_wise1', 'isLRG']
+    keys_to_inherit_from_diffsky = [
+        "is_cen",
+        "sub_pos",
+        "sub_vel",
+        "Host_pos",
+        "Host_vel",
+        "log_Mvir_host",
+        "Vmax_host",
+        "mstar",
+        "app_mag_g",
+        "app_mag_r",
+        "app_mag_z",
+        "app_mag_wise1",
+        "abs_mag_g",
+        "abs_mag_r",
+        "abs_mag_z",
+        "abs_mag_wise1",
+        "isLRG",
+    ]
     for key in keys_to_inherit_from_diffsky:
         output_mock["diffsky_" + key] = um_mock[key][
             galsampler_res.target_gals_selection_indx
@@ -159,10 +178,10 @@ if __name__ == "__main__":
         )
     ).T
 
-    is_cen_target = output_mock["diffsky_is_cen"].astype('bool')
+    is_cen_target = output_mock["diffsky_is_cen"].astype("bool")
     is_sat_target = ~is_cen_target
 
-    is_cen_source = um_mock["is_cen"].astype('bool')
+    is_cen_source = um_mock["is_cen"].astype("bool")
     is_sat_source = ~is_cen_source
     logmh_host_source = um_mock["log_Mvir_host"]
     pos_host_source = um_mock["Host_pos"]
@@ -204,7 +223,7 @@ if __name__ == "__main__":
     )
     t11 = time()
     print("{0:.1f} seconds to assign ellipsoidal velocities".format(t11 - t10))
-    
+
     print("\n")
     print(output_mock.keys())
     outname = os.path.join(OUTDRN, args.outname)

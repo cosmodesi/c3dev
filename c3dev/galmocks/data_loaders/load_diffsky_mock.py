@@ -1,8 +1,8 @@
 """
 """
 import os
-from astropy.table import Table
 
+from astropy.table import Table
 
 NERSC_DRN = "/global/cfs/cdirs/desi/users/gbeltzmo/C3EMC/UNIT"
 LATEST = "v0.3"
