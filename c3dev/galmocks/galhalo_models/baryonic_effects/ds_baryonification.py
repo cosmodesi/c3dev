@@ -46,7 +46,7 @@ def deltabar_ds(lgrad, redshift, lgmh, halo_percentile):
 
         delta_bar := ΔΣ_hydro(r)/ΔΣ_dm(r) - 1
 
-        delta_bar is positive at radii r where ΔΣ(r) is larger in hydro than gravity-only
+        delta_bar > 0 at radii r where ΔΣ(r) is larger in hydro than gravity-only
         and negative when ΔΣ in hydro is smaller than gravity-only
 
     """
